@@ -14,9 +14,7 @@
         android:theme="@style/Theme.DawnlightClinicalStudy">
         <activity
             android:name=".presentation.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.DawnlightClinicalStudy.NoActionBar">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Dawnlight Clinical Study</string>
+
+    <string name="setting_wifi_hotspot_instruction">Setting wifi hotspot and turn on pairing mode of life signals patch.\nPlug in the USB drive and turn on capnostream.</string>
+    <string name="subject_id">Subject ID:</string>
+    <string name="patch">patch</string>
+    <string name="go_to_hotspot_setting">Go to hotspot setting</string>
 </resources>
