@@ -82,7 +82,7 @@ dependencies {
 
     def retrofit = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
 
     def hilt = "2.33-beta"
     implementation "com.google.dagger:hilt-android:$hilt"

@@ -10,6 +10,7 @@ import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.platform.LocalContext
@@ -31,8 +32,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var mDataReceiverService: DataReceiverService? = null
-    private val dataReceiverServiceListener = createServiceListener()
-    private val mServiceConnection = createServiceConnection()
+    lateinit var dataReceiverServiceListener: ServiceListener
+    lateinit var mServiceConnection: ServiceConnection
+
+    private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,9 @@ class MainActivity : AppCompatActivity() {
         StrictMode.setThreadPolicy(ThreadPolicy.Builder().permitAll().build())
 
         PermissionUtil.checkPermissionAndRequest(this)
+
+        dataReceiverServiceListener = createServiceListener()
+        mServiceConnection = createServiceConnection()
         startHotspotService()
     }
 
@@ -82,7 +88,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun createServiceListener(): ServiceListener {
         return ServiceListener { event, json ->
-
+            runOnUiThread {
+                viewModel.lifeSignalDataReceived(event, json)
+            }
         }
     }
 

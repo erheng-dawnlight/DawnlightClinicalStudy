@@ -69,10 +69,9 @@ fun SubjectInputScreen(
                         end.linkTo(parent.end)
                     },
                 ) {
-                    Text(context.getString(viewModel.state.value.buttonText))
+                    Text(viewModel.state.value.buttonText)
                 }
             }
         }
-
     }
 }
