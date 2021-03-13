@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Dawnlight Clinical Study</string>
 
-    <string name="setting_wifi_hotspot_instruction">Setting wifi hotspot and turn on pairing mode of life signals patch.\nPlug in the USB drive and turn on capnostream.</string>
-    <string name="subject_id">Subject ID:</string>
+    <string name="setting_wifi_hotspot_instruction">Turn on Wi-Fi hotspot &amp; tethering. Set hotspot\'s name as the ID on LifeSignals device. Set hotspot\'s password as copoernious.</string>
+    <string name="plug_in_usb_instruction">Plug in the USB drive and turn on capnostream.</string>
+    <string name="looking_for_the_device">Looking for the device ...</string>
+    <string name="xxx_has_connected">%1$s has connected.</string>
+    <string name="subject_id">Input Subject ID:</string>
     <string name="patch">patch</string>
     <string name="go_to_hotspot_setting">Go to hotspot setting</string>
+    <string name="next">Next</string>
 </resources>

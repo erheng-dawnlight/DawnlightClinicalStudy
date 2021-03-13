@@ -15,4 +15,8 @@ class LifeSignalDataParsingUseCase(
             }
         }
     }
+
+    fun getConnectedPatchData(): JSONObject {
+        return lifeSignalRepository.lastDiscoveredPatchChannel.value
+    }
 }

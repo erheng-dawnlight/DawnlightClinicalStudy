@@ -3,73 +3,137 @@ package com.example.dawnlightclinicalstudy.presentation.ui.subject_input
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.dawnlightclinicalstudy.R
 import com.example.dawnlightclinicalstudy.presentation.theme.AppTheme
+import com.example.dawnlightclinicalstudy.presentation.theme.Blue400
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
 @ExperimentalMaterialApi
 @Composable
 fun SubjectInputScreen(
     viewModel: SubjectInputViewModel,
     context: Context,
+    onNavigateToSubjectScreen: () -> Unit,
 ) {
     AppTheme(
         darkTheme = false,
     ) {
-        Scaffold {
-            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-                val (title, textField, button, hotspotButton) = createRefs()
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = context.getString(R.string.app_name),
+                            color = MaterialTheme.colors.secondary,
+                        )
+                    }
+                )
+            }) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+            ) {
                 Text(
                     text = context.getString(R.string.setting_wifi_hotspot_instruction),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
-                        .padding(16.dp, 24.dp, 16.dp, 0.dp)
-                        .constrainAs(title) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
+                        .padding(0.dp, 24.dp, 0.dp, 0.dp)
+                        .align(Alignment.CenterHorizontally),
                 )
-                TextField(
-                    value = viewModel.state.value.subjectId,
-                    onValueChange = { viewModel.subjectIdTextChanged(it) },
-                    label = { Text(text = context.getString(R.string.subject_id)) },
-                    modifier = Modifier
-                        .fillMaxWidth(.8f)
-                        .constrainAs(textField) {
-                            top.linkTo(title.bottom, margin = 40.dp)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                )
+
                 Button(
+                    modifier = Modifier
+                        .padding(16.dp, 24.dp, 16.dp, 0.dp)
+                        .align(Alignment.CenterHorizontally),
                     onClick = {
                         context.startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
                     },
-                    modifier = Modifier.constrainAs(hotspotButton) {
-                        top.linkTo(textField.bottom, margin = 40.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
                 ) {
-                    Text(context.getString(R.string.go_to_hotspot_setting))
+                    Text(
+                        text = context.getString(R.string.go_to_hotspot_setting),
+                        color = MaterialTheme.colors.secondary,
+                    )
                 }
-                Button(
-                    onClick = { /* Do something! */ },
-                    modifier = Modifier.constrainAs(button) {
-                        bottom.linkTo(parent.bottom, margin = 32.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(0.dp, 72.dp, 0.dp, 0.dp)
+                        .align(Alignment.CenterHorizontally),
                 ) {
-                    Text(viewModel.state.value.buttonText)
+                    if (viewModel.state.value.patchId.isNotEmpty()) {
+                        Text(
+                            text = context.getString(
+                                R.string.xxx_has_connected,
+                                viewModel.state.value.patchId,
+                            ),
+                            style = MaterialTheme.typography.body1,
+                        )
+
+                        Icon(
+                            Icons.Outlined.Done,
+                            "",
+                            tint = Blue400,
+                            modifier = Modifier.padding(8.dp, 0.dp, 0.dp, 0.dp),
+                        )
+                    } else {
+                        Text(
+                            text = context.getString(R.string.looking_for_the_device),
+                            style = MaterialTheme.typography.body2,
+                        )
+
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(8.dp, 0.dp, 0.dp, 0.dp),
+                            strokeWidth = 2.dp,
+                        )
+                    }
+                }
+
+                TextField(
+                    value = viewModel.state.value.subjectId,
+                    onValueChange = { viewModel.subjectIdTextChanged(it) },
+                    label = {
+                        Text(
+                            text = context.getString(R.string.subject_id),
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(.8f)
+                        .padding(0.dp, 72.dp, 0.dp, 0.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(36.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.nextButtonClicked()
+                        },
+                        enabled = viewModel.state.value.enableNextButton(),
+                    ) {
+                        Text(
+                            text = context.getString(R.string.next),
+                            color = MaterialTheme.colors.secondary,
+                        )
+                    }
                 }
             }
         }

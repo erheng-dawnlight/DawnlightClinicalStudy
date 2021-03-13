@@ -13,6 +13,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.State
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,7 +27,9 @@ import com.example.dawnlightclinicalstudy.presentation.utils.PermissionUtil
 import com.example.dawnlightclinicalstudy.usecases.service.DataReceiverService
 import com.example.dawnlightclinicalstudy.usecases.service.ServiceListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 
+@FlowPreview
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -46,9 +49,16 @@ class MainActivity : AppCompatActivity() {
                 composable(route = Screen.SubjectId.route) { backStackEntry ->
                     val factory = HiltViewModelFactory(LocalContext.current, backStackEntry)
                     val viewModel: SubjectInputViewModel = viewModel("SubjectIdViewModel", factory)
-                    SubjectInputScreen(viewModel = viewModel, context = LocalContext.current)
+                    SubjectInputScreen(
+                        viewModel = viewModel,
+                        context = this@MainActivity
+                    ) {
+
+                    }
                 }
             }
+
+            render(viewModel.state)
         }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -59,6 +69,12 @@ class MainActivity : AppCompatActivity() {
         dataReceiverServiceListener = createServiceListener()
         mServiceConnection = createServiceConnection()
         startHotspotService()
+    }
+
+    private fun render(state: State<MainActivityViewModel.State>) {
+        state.value.selectedPatch?.maybeConsume {
+            mDataReceiverService?.select(it)
+        }
     }
 
     private fun startHotspotService() {

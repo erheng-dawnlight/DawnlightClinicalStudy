@@ -1,6 +1,7 @@
 package com.example.dawnlightclinicalstudy.di
 
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
+import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalDataParsingUseCase
 import dagger.Module
 import dagger.Provides
@@ -18,7 +19,14 @@ object MainActivityModule {
         return LifeSignalRepository()
     }
 
+    @ActivityRetainedScoped
     @Provides
+    fun provideMainActivityEventListener(): MainActivityEventListener {
+        return MainActivityEventListener()
+    }
+
+    @Provides
+    @ActivityRetainedScoped
     fun provideLifeSignalDataParsingUseCase(
         lifeSignalRepository: LifeSignalRepository
     ): LifeSignalDataParsingUseCase {
