@@ -8,8 +8,9 @@ import org.json.JSONObject
 
 class LifeSignalRepository {
 
-    val lastDiscoveredPatchChannel = ConflatedBroadcastChannel<JSONObject>()
+    var subjectId: String = ""
 
+    private val lastDiscoveredPatchChannel = ConflatedBroadcastChannel<JSONObject>()
     val lastDiscoveredPatchFlow: Flow<JSONObject> = lastDiscoveredPatchChannel
         .asFlow()
         .distinctUntilChanged()

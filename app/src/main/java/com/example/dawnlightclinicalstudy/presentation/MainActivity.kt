@@ -14,19 +14,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.State
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.HiltViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
-import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectInputScreen
-import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectInputViewModel
 import com.example.dawnlightclinicalstudy.presentation.utils.PermissionUtil
 import com.example.dawnlightclinicalstudy.usecases.service.DataReceiverService
 import com.example.dawnlightclinicalstudy.usecases.service.ServiceListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 @FlowPreview
@@ -40,24 +32,11 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainActivityViewModel by viewModels()
 
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
-            val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = Screen.SubjectId.route) {
-                composable(route = Screen.SubjectId.route) { backStackEntry ->
-                    val factory = HiltViewModelFactory(LocalContext.current, backStackEntry)
-                    val viewModel: SubjectInputViewModel = viewModel("SubjectIdViewModel", factory)
-                    SubjectInputScreen(
-                        viewModel = viewModel,
-                        context = this@MainActivity
-                    ) {
-
-                    }
-                }
-            }
-
+            Navigation()
             render(viewModel.state)
         }
 

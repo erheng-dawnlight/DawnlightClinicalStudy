@@ -1,6 +1,6 @@
 package com.example.dawnlightclinicalstudy.domain
 
-data class SingleEvent<out T>(private val data: T) {
+class SingleEvent<out T>(private val data: T) {
     private var consumed: Boolean = false
 
     /**

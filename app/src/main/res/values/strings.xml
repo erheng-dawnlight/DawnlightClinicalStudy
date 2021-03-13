@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Dawnlight Clinical Study</string>
 
+
+    <string name="turn_on_hotspot">Turn on hotspot</string>
     <string name="setting_wifi_hotspot_instruction">Turn on Wi-Fi hotspot &amp; tethering. Set hotspot\'s name as the ID on LifeSignals device. Set hotspot\'s password as copoernious.</string>
     <string name="plug_in_usb_instruction">Plug in the USB drive and turn on capnostream.</string>
     <string name="looking_for_the_device">Looking for the device ...</string>
