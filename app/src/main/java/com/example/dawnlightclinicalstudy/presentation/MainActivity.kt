@@ -47,12 +47,20 @@ class MainActivity : AppCompatActivity() {
 
         dataReceiverServiceListener = createServiceListener()
         mServiceConnection = createServiceConnection()
-        startHotspotService()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService()
     }
 
     private fun render(state: State<MainActivityViewModel.State>) {
         state.value.selectedPatch?.maybeConsume {
             mDataReceiverService?.select(it)
+        }
+
+        state.value.startHotspotService?.maybeConsume {
+            startHotspotService()
         }
     }
 

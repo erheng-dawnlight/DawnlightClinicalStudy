@@ -4,7 +4,7 @@ import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.domain.LifeSignalEvent
 import org.json.JSONObject
 
-class LifeSignalDataParsingUseCase(
+class LifeSignalUseCase(
     val lifeSignalRepository: LifeSignalRepository
 ) {
 
@@ -19,4 +19,8 @@ class LifeSignalDataParsingUseCase(
     fun getConnectedPatchData(): JSONObject {
         return lifeSignalRepository.lastDiscoveredPatchChannel.value
     }
+}
+
+sealed class LifeSignalUseCaseCallback {
+    object Nothing : LifeSignalUseCaseCallback()
 }

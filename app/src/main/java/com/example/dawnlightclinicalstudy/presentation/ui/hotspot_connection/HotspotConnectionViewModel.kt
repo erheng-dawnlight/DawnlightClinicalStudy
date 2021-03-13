@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
+import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCaseCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import org.json.JSONObject
 import javax.inject.Inject
 
 @FlowPreview
@@ -27,19 +27,25 @@ class HotspotConnectionViewModel @Inject constructor(
     }
 
     val state = mutableStateOf(State())
+    var lastPatchId = ""
 
     init {
-        viewModelScope.launch {
-            repository.lastDiscoveredPatchFlow.onEach { jsonObject ->
-                handlePatchDiscovered(jsonObject)
-            }.launchIn(this)
-        }
+        repository.lastDiscoveredPatchFlow
+            .distinctUntilChanged()
+            .onEach { handlePatchDiscovered(it) }
+            .launchIn(viewModelScope)
+
+        mainActivityEventListener.startHotspotService()
     }
 
-    private fun handlePatchDiscovered(jsonObject: JSONObject) {
-        state.value = state.value.copy(
-            patchId = jsonObject.getJSONObject("PatchInfo").getString("PatchId")
-        )
+    private fun handlePatchDiscovered(patchId: String) {
+        if (lastPatchId != patchId) {
+            lastPatchId = patchId
+            state.value = state.value.copy(patchId = patchId)
+            mainActivityEventListener.onPatchSelected()
+        } else {
+            LifeSignalUseCaseCallback.Nothing
+        }
     }
 
     fun nextButtonClicked() {
