@@ -4,7 +4,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
+import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
+import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCaseCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -22,6 +24,7 @@ class HotspotConnectionViewModel @Inject constructor(
 
     data class State(
         val patchId: String = "",
+        val navigateTo: SingleEvent<String>? = null,
     ) {
         fun enableNextButton() = patchId.isNotBlank()
     }
@@ -42,7 +45,6 @@ class HotspotConnectionViewModel @Inject constructor(
         if (lastPatchId != patchId) {
             lastPatchId = patchId
             state.value = state.value.copy(patchId = patchId)
-            mainActivityEventListener.onPatchSelected()
         } else {
             LifeSignalUseCaseCallback.Nothing
         }
@@ -50,5 +52,6 @@ class HotspotConnectionViewModel @Inject constructor(
 
     fun nextButtonClicked() {
         mainActivityEventListener.onPatchSelected()
+        state.value = state.value.copy(navigateTo = SingleEvent(Screen.PatchGraph.route))
     }
 }

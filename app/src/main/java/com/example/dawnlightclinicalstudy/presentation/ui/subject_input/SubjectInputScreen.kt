@@ -65,6 +65,7 @@ fun SubjectInputScreen(
                 BottomButton(
                     onButtonClicked = viewModel::nextButtonClicked,
                     enabled = viewModel.state.value.subjectId.isNotEmpty(),
+                    text = LocalContext.current.getString(R.string.next),
                 )
             }
         }

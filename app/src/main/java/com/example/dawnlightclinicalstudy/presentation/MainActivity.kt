@@ -9,6 +9,7 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -50,42 +51,49 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         stopService()
+        super.onDestroy()
     }
 
     private fun render(state: State<MainActivityViewModel.State>) {
-        state.value.selectedPatch?.maybeConsume {
-            mDataReceiverService?.select(it)
+        state.value.selectPatch?.maybeConsume { (json, shouldConfigure) ->
+            mDataReceiverService?.select(json)
+            if (shouldConfigure) {
+                mDataReceiverService?.configure(json)
+                mDataReceiverService?.start()
+            } else {
+                mDataReceiverService?.start()
+                mDataReceiverService?.commit(false)
+            }
         }
 
         state.value.startHotspotService?.maybeConsume {
             startHotspotService()
         }
-    }
 
-    private fun startHotspotService() {
-        try {
-            val serviceIntent = Intent(applicationContext, DataReceiverService::class.java)
-            serviceIntent.putExtra(packageName, "start")
-            Log.e(LOG_TAG, "Start service")
-            applicationContext.startService(serviceIntent)
-            applicationContext.bindService(
-                serviceIntent,
-                mServiceConnection,
-                BIND_AUTO_CREATE,
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e(LOG_TAG, "Ex" + e.message)
+        state.value.errorText?.maybeConsume {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
         }
     }
 
+    private fun startHotspotService() {
+        val serviceIntent = Intent(this, DataReceiverService::class.java)
+        startService(serviceIntent)
+        bindService(
+            serviceIntent,
+            mServiceConnection,
+            BIND_AUTO_CREATE,
+        )
+    }
+
     fun stopService() {
-        val serviceIntent = Intent(applicationContext, DataReceiverService::class.java)
-        applicationContext.unbindService(mServiceConnection)
-        applicationContext.stopService(serviceIntent)
+        mDataReceiverService?.stopAcquisition()
         mDataReceiverService?.stopForeground(true)
+        mDataReceiverService?.stopSelf()
+
+        val serviceIntent = Intent(this, DataReceiverService::class.java)
+        unbindService(mServiceConnection)
+        stopService(serviceIntent)
         mDataReceiverService = null
     }
 

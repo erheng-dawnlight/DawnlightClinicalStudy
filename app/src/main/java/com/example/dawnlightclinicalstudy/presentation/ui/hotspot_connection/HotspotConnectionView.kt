@@ -93,7 +93,8 @@ fun HotspotConnectionView(
 
         BottomButton(
             onButtonClicked = onNextButtonClicked,
-            enabled = enableNextButton()
+            enabled = enableNextButton(),
+            text = LocalContext.current.getString(R.string.next),
         )
     }
 }
