@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
 import com.example.dawnlightclinicalstudy.R
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
+import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.theme.AppTheme
 import com.example.dawnlightclinicalstudy.presentation.ui.component.AppTopBar
 import com.example.dawnlightclinicalstudy.presentation.ui.component.BottomButton
@@ -38,7 +39,7 @@ fun SubjectInputScreen(
         Scaffold(
             topBar = {
                 AppTopBar(
-                    titleStringRes = R.string.app_name,
+                    titleString = StringWrapper.Res(R.string.app_name),
                     icon = Icons.Filled.Menu,
                 ) {}
             }

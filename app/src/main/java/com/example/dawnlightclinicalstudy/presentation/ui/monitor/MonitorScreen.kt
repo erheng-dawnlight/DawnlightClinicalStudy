@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.example.dawnlightclinicalstudy.R
+import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.theme.AppTheme
 import com.example.dawnlightclinicalstudy.presentation.ui.component.AppTopBar
 import com.example.dawnlightclinicalstudy.presentation.ui.component.BottomButton
@@ -36,7 +37,7 @@ fun MonitorScreen(
         Scaffold(
             topBar = {
                 AppTopBar(
-                    titleStringRes = R.string.monitor,
+                    titleString = StringWrapper.Res(R.string.monitor),
                     icon = Icons.Filled.ArrowBack,
                 ) {
                     navController.popBackStack()

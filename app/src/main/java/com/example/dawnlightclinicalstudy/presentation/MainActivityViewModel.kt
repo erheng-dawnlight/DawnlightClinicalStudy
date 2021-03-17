@@ -1,22 +1,19 @@
 package com.example.dawnlightclinicalstudy.presentation
 
-import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
+import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCase
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCaseCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 import org.json.JSONObject
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
@@ -27,8 +24,8 @@ class MainActivityViewModel @Inject constructor(
     data class State(
         val selectPatch: SingleEvent<Pair<JSONObject, Boolean>>? = null,
         val startHotspotService: SingleEvent<Unit>? = null,
-        val errorText: SingleEvent<String>? = null,
-        val buttonText: String = ""
+        val errorText: SingleEvent<StringWrapper>? = null,
+        val buttonText: StringWrapper = StringWrapper.Text("")
     )
 
     val state = mutableStateOf(State())
@@ -41,6 +38,11 @@ class MainActivityViewModel @Inject constructor(
                         is LifeSignalUseCaseCallback.SelectPatch -> {
                             state.value = state.value.copy(
                                 selectPatch = SingleEvent(it.json to it.shouldConfigure)
+                            )
+                        }
+                        is LifeSignalUseCaseCallback.Error -> {
+                            state.value = state.value.copy(
+                                errorText = SingleEvent(it.error)
                             )
                         }
                     }

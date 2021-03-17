@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         state.value.errorText?.maybeConsume {
-            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, it.getText(this), Toast.LENGTH_LONG).show()
         }
     }
 
