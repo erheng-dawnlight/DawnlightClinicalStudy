@@ -57,14 +57,14 @@ fun MonitorScreen(
                         .fillMaxWidth()
                         .height(200.dp),
                 )
-                Text("dada")
+                Text(viewModel.state.value.timerText.getText(LocalContext.current))
                 Text("yes")
                 BottomButton(
                     onButtonClicked = {
                         viewModel.bottomButtonClicked()
                     },
                     enabled = true,
-                    text = LocalContext.current.getString(R.string.start),
+                    text = viewModel.state.value.buttonText.getText(LocalContext.current),
                 )
             }
         }
