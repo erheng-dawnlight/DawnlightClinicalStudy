@@ -15,10 +15,9 @@ class PatchView(context: Context) : View(context) {
     var paint: Paint = Paint()
 
     // Display Realtime data
-    fun updateData(ecg0: ArrayList<Int>, ecg1: ArrayList<Int>, resp1: ArrayList<Int>) {
+    fun updateData(ecg0: List<Int>, ecg1: List<Int>) {
         graph1.addPoints(ecg0, width)
         graph2.addPoints(ecg1, width)
-        graph3.addPoints(resp1, width)
 
         // Note; This example app ignores the respiration data..
         Handler(Looper.getMainLooper()).post { invalidate() }
@@ -52,7 +51,7 @@ class EcgGraph constructor(graphColor: Int) {
     var currentLine: ArrayList<Int?> = ArrayList()
     var prevLine: ArrayList<Int?> = ArrayList()
     var paint: Paint = Paint()
-    fun addPoints(points: ArrayList<Int>, graphWidth: Int) {
+    fun addPoints(points: List<Int>, graphWidth: Int) {
         synchronized(this) {
             for (i in points.indices) {
                 if (currentLine.size >= graphWidth) {  // Wrap back

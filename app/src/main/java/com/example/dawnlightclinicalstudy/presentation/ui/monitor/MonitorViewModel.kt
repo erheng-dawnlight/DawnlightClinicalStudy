@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.R
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
+import com.example.dawnlightclinicalstudy.domain.LifeSignalFilteredData
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
-import com.example.dawnlightclinicalstudy.presentation.BaseApplication
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -20,16 +20,13 @@ import javax.inject.Inject
 class MonitorViewModel @Inject constructor(
     val repository: LifeSignalRepository,
     val mainActivityEventListener: MainActivityEventListener,
-    val baseApplication: BaseApplication,
 ) : ViewModel() {
 
     data class State(
-        val patchData: SingleEvent<Triple<ArrayList<Int>, ArrayList<Int>, ArrayList<Int>>>? = null,
+        val patchData: SingleEvent<LifeSignalFilteredData>? = null,
         val isStarted: Boolean = false,
         val buttonText: StringWrapper = StringWrapper.Res(R.string.start),
-    ) {
-
-    }
+    )
 
     val state = mutableStateOf(State())
     var lastPatchId = ""

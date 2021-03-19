@@ -2,12 +2,12 @@ package com.example.dawnlightclinicalstudy.usecases.main
 
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.data_source.response.SensorDataResponse
+import com.example.dawnlightclinicalstudy.domain.LifeSignalFilteredData
 import com.example.dawnlightclinicalstudy.domain.LifeSignalEvent
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.squareup.moshi.Moshi
 import org.json.JSONArray
 import org.json.JSONObject
-import java.text.DecimalFormat
 
 class LifeSignalUseCase(
     val lifeSignalRepository: LifeSignalRepository
@@ -29,92 +29,23 @@ class LifeSignalUseCase(
             }
             LifeSignalEvent.ON_FILTERED_DATA -> {
                 val sensorData: JSONObject = json.getJSONObject("SensorData")
-
-                val ecg0Arr: JSONArray? = if (sensorData.has("ECG_CH_D")) {
-                    sensorData.getJSONArray("ECG_CH_D")
-                } else {
-                    null
-                }
                 val ecg0 = ArrayList<Int>()
-
-                if (ecg0Arr != null) {
-                    for (j in 0 until ecg0Arr.length()) {
-                        val elem = ecg0Arr.getInt(j)
-                        if (elem != -524288) {
-                            ecg0.add(elem)
-                        } else {
-                            ecg0.add(0)
-                        }
+                if (sensorData.has("ECG_CH_D")) {
+                    val array = sensorData.getJSONArray("ECG_CH_D")
+                    for (i in 0 until array.length()) {
+                        ecg0.add(array.getInt(i))
                     }
-                }
-
-                val ecg1Arr: JSONArray? = if (sensorData.has("ECG_CH_A")) {
-                    sensorData.getJSONArray("ECG_CH_A")
-                } else {
-                    null
                 }
                 val ecg1 = ArrayList<Int>()
-
-                if (ecg1Arr != null) {
-                    for (j in 0 until ecg1Arr.length()) {
-                        val elem = ecg1Arr.getInt(j)
-                        if (elem != -524288) {
-                            ecg1.add(elem)
-                        } else {
-                            ecg1.add(0)
-                        }
+                if (sensorData.has("ECG_CH_A")) {
+                    val array = sensorData.getJSONArray("ECG_CH_A")
+                    for (i in 0 until array.length()) {
+                        ecg1.add(array.getInt(i))
                     }
                 }
-
-                val respArr: JSONArray? = if (sensorData.has("Respiration")) {
-                    sensorData.getJSONArray("Respiration")
-                } else {
-                    null
-                }
-                val resp = ArrayList<Int>()
-
-                if (respArr != null) {
-                    for (j in 0 until respArr.length()) {
-                        val elem = respArr.getInt(j)
-                        if (elem != -524288) {
-                            resp.add(elem)
-                        } else {
-                            resp.add(0)
-                        }
-                    }
-                }
-
-                if (sensorData.has("HR")) {
-                    val hrArray = sensorData.getJSONArray("HR")
-                    val hr = ArrayList<Int>()
-                    for (j in 0 until hrArray.length()) {
-                        hr.add(hrArray.getInt(j))
-                    }
-                }
-
-                if (sensorData.has("RR_OUT")) {
-                    val rrArray = sensorData.getJSONArray("RR_OUT")
-                    val rr = ArrayList<Int>()
-                    for (j in 0 until rrArray.length()) {
-                        rr.add(rrArray.getInt(j))
-                    }
-                }
-
-                if (sensorData.has("TEMPERATURE")) {
-                    var TEMP_CODE_PER_DEG = 100.0
-                    if (sensorData.has("TEMP_CODE_PER_DEG")) {
-                        TEMP_CODE_PER_DEG = sensorData.getDouble("TEMP_CODE_PER_DEG")
-                    }
-                    val tempArray = sensorData.getJSONArray("Temperature")
-                    val temp =
-                        (tempArray.getInt(tempArray.length() - 1) / TEMP_CODE_PER_DEG).toFloat()
-                    val df = DecimalFormat("#.0")
-                    var str = "-"
-                    if (temp > 0) {
-                        str = df.format(temp.toDouble())
-                    }
-                }
-                lifeSignalRepository.onFilteredData(Triple(ecg0, ecg1, resp))
+                lifeSignalRepository.onFilteredData(
+                    LifeSignalFilteredData(ecg0, ecg1, System.currentTimeMillis())
+                )
             }
         }
     }

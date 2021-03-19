@@ -50,7 +50,7 @@ fun MonitorScreen(
                     },
                     update = { patchView ->
                         viewModel.state.value.patchData?.maybeConsume {
-                            patchView.updateData(it.first, it.second, it.third)
+                            patchView.updateData(it.ecg0, it.ecg1)
                         }
                     },
                     modifier = Modifier
