@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @FlowPreview
 @HiltViewModel
-class SubjectInputViewModel @Inject constructor(
+class SubjectIdInputViewModel @Inject constructor(
     val repository: LifeSignalRepository,
     val mainActivityEventListener: MainActivityEventListener,
 ) : ViewModel() {

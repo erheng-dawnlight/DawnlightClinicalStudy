@@ -1,7 +1,7 @@
 package com.example.dawnlightclinicalstudy.presentation.navigation
 
 sealed class Screen(val route: String) {
-    object SubjectId : Screen("subject_id")
+    object SubjectIdInput : Screen("subject_id_input")
     object HotspotConnection : Screen("hotspot_connection")
-    object PatchGraph : Screen("patch_graph")
+    object GraphMonitor : Screen("graph_monitor")
 }

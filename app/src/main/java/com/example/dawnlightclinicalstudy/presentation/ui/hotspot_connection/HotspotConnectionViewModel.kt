@@ -56,6 +56,6 @@ class HotspotConnectionViewModel @Inject constructor(
 
     fun nextButtonClicked() {
         mainActivityEventListener.onPatchSelected()
-        state.value = state.value.copy(navigateTo = SingleEvent(Screen.PatchGraph.route))
+        state.value = state.value.copy(navigateTo = SingleEvent(Screen.GraphMonitor.route))
     }
 }

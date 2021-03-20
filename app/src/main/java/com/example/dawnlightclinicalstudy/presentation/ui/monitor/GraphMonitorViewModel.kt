@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @FlowPreview
 @HiltViewModel
-class MonitorViewModel @Inject constructor(
+class GraphMonitorViewModel @Inject constructor(
     private val repository: LifeSignalRepository,
     private val mainActivityEventListener: MainActivityEventListener,
 ) : ViewModel() {

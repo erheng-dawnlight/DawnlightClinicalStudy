@@ -29,8 +29,8 @@ import kotlinx.coroutines.FlowPreview
 @FlowPreview
 @ExperimentalMaterialApi
 @Composable
-fun SubjectInputScreen(
-    viewModel: SubjectInputViewModel,
+fun SubjectIdInputScreen(
+    viewModel: SubjectIdInputViewModel,
     navController: NavHostController,
 ) {
     AppTheme(

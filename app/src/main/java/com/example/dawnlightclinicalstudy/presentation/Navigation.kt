@@ -11,10 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
 import com.example.dawnlightclinicalstudy.presentation.ui.hotspot_connection.HotspotConnectionScreen
 import com.example.dawnlightclinicalstudy.presentation.ui.hotspot_connection.HotspotConnectionViewModel
-import com.example.dawnlightclinicalstudy.presentation.ui.monitor.MonitorScreen
-import com.example.dawnlightclinicalstudy.presentation.ui.monitor.MonitorViewModel
-import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectInputScreen
-import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectInputViewModel
+import com.example.dawnlightclinicalstudy.presentation.ui.monitor.GraphMonitorScreen
+import com.example.dawnlightclinicalstudy.presentation.ui.monitor.GraphMonitorViewModel
+import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectIdInputScreen
+import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectIdInputViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
@@ -25,12 +25,12 @@ import kotlinx.coroutines.FlowPreview
 fun Navigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.SubjectId.route) {
-        composable(route = Screen.SubjectId.route) { backStackEntry ->
+    NavHost(navController = navController, startDestination = Screen.SubjectIdInput.route) {
+        composable(route = Screen.SubjectIdInput.route) { backStackEntry ->
             val factory = HiltViewModelFactory(LocalContext.current, backStackEntry)
-            val viewModel: SubjectInputViewModel =
-                viewModel(Screen.SubjectId.route, factory)
-            SubjectInputScreen(
+            val viewModel: SubjectIdInputViewModel =
+                viewModel(Screen.SubjectIdInput.route, factory)
+            SubjectIdInputScreen(
                 viewModel = viewModel,
                 navController = navController,
             )
@@ -46,11 +46,11 @@ fun Navigation() {
             )
         }
 
-        composable(route = Screen.PatchGraph.route) { backStackEntry ->
+        composable(route = Screen.GraphMonitor.route) { backStackEntry ->
             val factory = HiltViewModelFactory(LocalContext.current, backStackEntry)
-            val viewModel: MonitorViewModel =
-                viewModel(Screen.PatchGraph.route, factory)
-            MonitorScreen(
+            val viewModel: GraphMonitorViewModel =
+                viewModel(Screen.GraphMonitor.route, factory)
+            GraphMonitorScreen(
                 viewModel = viewModel,
                 navController = navController,
             )

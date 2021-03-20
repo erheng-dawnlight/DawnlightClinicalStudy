@@ -25,8 +25,8 @@ import kotlinx.coroutines.FlowPreview
 @FlowPreview
 @ExperimentalMaterialApi
 @Composable
-fun MonitorScreen(
-    viewModel: MonitorViewModel,
+fun GraphMonitorScreen(
+    viewModel: GraphMonitorViewModel,
     navController: NavController,
 ) {
     AppTheme(
