@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
+import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
 import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCaseCallback
@@ -23,6 +24,7 @@ class HotspotConnectionViewModel @Inject constructor(
 ) : ViewModel() {
 
     data class State(
+        val toolbarTitle: StringWrapper? = null,
         val patchId: String = "",
         val navigateTo: SingleEvent<String>? = null,
     ) {
@@ -33,6 +35,8 @@ class HotspotConnectionViewModel @Inject constructor(
     var lastPatchId = ""
 
     init {
+        state.value = state.value.copy(toolbarTitle = StringWrapper.Text(repository.subjectId))
+
         repository.lastDiscoveredPatchFlow
             .distinctUntilChanged()
             .onEach { handlePatchDiscovered(it) }

@@ -7,8 +7,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
-import com.example.dawnlightclinicalstudy.R
-import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.theme.AppTheme
 import com.example.dawnlightclinicalstudy.presentation.ui.component.AppTopBar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +26,7 @@ fun HotspotConnectionScreen(
         Scaffold(
             topBar = {
                 AppTopBar(
-                    titleString = StringWrapper.Res(R.string.turn_on_hotspot),
+                    titleString = viewModel.state.value.toolbarTitle,
                     icon = Icons.Filled.ArrowBack,
                 ) {
                     navController.popBackStack()

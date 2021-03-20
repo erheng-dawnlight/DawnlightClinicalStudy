@@ -9,14 +9,14 @@ import com.example.dawnlightclinicalstudy.domain.StringWrapper
 
 @Composable
 fun AppTopBar(
-    titleString: StringWrapper,
+    titleString: StringWrapper?,
     icon: ImageVector?,
     onIconClicked: () -> Unit,
 ) {
     TopAppBar(
         title = {
             Text(
-                text = titleString.getText(LocalContext.current),
+                text = titleString?.getText(LocalContext.current) ?: "",
             )
         },
         navigationIcon = {

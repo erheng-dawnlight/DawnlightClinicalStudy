@@ -25,7 +25,7 @@ import kotlinx.coroutines.FlowPreview
 fun Navigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.HotspotConnection.route) {
+    NavHost(navController = navController, startDestination = Screen.SubjectId.route) {
         composable(route = Screen.SubjectId.route) { backStackEntry ->
             val factory = HiltViewModelFactory(LocalContext.current, backStackEntry)
             val viewModel: SubjectInputViewModel =

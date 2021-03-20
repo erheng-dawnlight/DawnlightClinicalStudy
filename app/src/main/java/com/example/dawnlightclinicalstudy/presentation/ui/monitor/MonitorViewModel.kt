@@ -25,6 +25,7 @@ class MonitorViewModel @Inject constructor(
 ) : ViewModel() {
 
     data class State(
+        val toolbarTitle: StringWrapper? = null,
         val patchData: SingleEvent<LifeSignalFilteredData>? = null,
         val isStarted: Boolean = false,
         val buttonText: StringWrapper = StringWrapper.Res(R.string.start),
@@ -38,6 +39,8 @@ class MonitorViewModel @Inject constructor(
     private var countDownTimer: CountDownTimer? = null
 
     init {
+        state.value = state.value.copy(toolbarTitle = StringWrapper.Text(repository.subjectId))
+
         repository.filteredDataFlow
             .onEach {
                 state.value = state.value.copy(patchData = SingleEvent(it))
