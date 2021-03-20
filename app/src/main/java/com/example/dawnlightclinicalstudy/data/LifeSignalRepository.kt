@@ -17,8 +17,8 @@ class LifeSignalRepository {
         .asFlow()
         .map { it.getJSONObject("PatchInfo").getString("PatchId") }
 
-    val statusChannel = ConflatedBroadcastChannel<Boolean>()
-    val statusFlow: Flow<Boolean> = statusChannel.asFlow()
+    val statusChannel = ConflatedBroadcastChannel<Int>()
+    val statusFlow: Flow<Int> = statusChannel.asFlow()
 
     val filteredDataChannel = ConflatedBroadcastChannel<LifeSignalFilteredData>()
     val filteredDataFlow: Flow<LifeSignalFilteredData> = filteredDataChannel.asFlow()
@@ -27,8 +27,8 @@ class LifeSignalRepository {
         lastDiscoveredPatchChannel.offer(jsonObject)
     }
 
-    fun onStatus(isReady: Boolean) {
-        statusChannel.offer(isReady)
+    fun onStatus(patchStatus: Int) {
+        statusChannel.offer(patchStatus)
     }
 
     fun onFilteredData(data: LifeSignalFilteredData) {

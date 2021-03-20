@@ -2,8 +2,8 @@ package com.example.dawnlightclinicalstudy.usecases.main
 
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.data_source.response.SensorDataResponse
-import com.example.dawnlightclinicalstudy.domain.LifeSignalFilteredData
 import com.example.dawnlightclinicalstudy.domain.LifeSignalEvent
+import com.example.dawnlightclinicalstudy.domain.LifeSignalFilteredData
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.squareup.moshi.Moshi
 import org.json.JSONArray
@@ -23,7 +23,7 @@ class LifeSignalUseCase(
             LifeSignalEvent.ON_STATUS -> {
                 if (json.getString("status") == "command") {
                     if (json.getString("command") == "configure") {
-                        lifeSignalRepository.onStatus(true)
+//                        lifeSignalRepository.onStatus(true)
                     }
                 }
             }
@@ -55,9 +55,8 @@ class LifeSignalUseCase(
             val patchStatus = (it.get("Capability") as JSONObject).getInt("PatchStatus")
             return when {
                 patchStatus >= 55 -> {
-                    LifeSignalUseCaseCallback.Error(
-                        StringWrapper.Text("This patch is not available, please use another one.")
-                    )
+                    lifeSignalRepository.onStatus(patchStatus)
+                    LifeSignalUseCaseCallback.Nothing
                 }
                 patchStatus >= 43 -> {
                     LifeSignalUseCaseCallback.SelectPatch(it, false)
