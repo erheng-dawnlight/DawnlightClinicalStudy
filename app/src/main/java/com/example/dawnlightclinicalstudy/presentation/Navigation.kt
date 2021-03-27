@@ -2,6 +2,7 @@ package com.example.dawnlightclinicalstudy.presentation
 
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,6 +19,7 @@ import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectI
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
+@ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @FlowPreview
 @ExperimentalMaterialApi

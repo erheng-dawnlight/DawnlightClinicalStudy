@@ -1,6 +1,8 @@
 package com.example.dawnlightclinicalstudy.di
 
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
+import com.example.dawnlightclinicalstudy.data.UserSessionRepository
+import com.example.dawnlightclinicalstudy.data_source.RetrofitService
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCase
 import dagger.Module
@@ -17,6 +19,12 @@ object MainActivityModule {
     @Provides
     fun provideLifeSignalRepository(): LifeSignalRepository {
         return LifeSignalRepository()
+    }
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideUserSessionRepository(retrofitService: RetrofitService): UserSessionRepository {
+        return UserSessionRepository(retrofitService)
     }
 
     @ActivityRetainedScoped

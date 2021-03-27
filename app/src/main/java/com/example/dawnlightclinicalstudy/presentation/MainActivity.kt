@@ -15,6 +15,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.State
+import androidx.compose.ui.ExperimentalComposeUiApi
 import com.example.dawnlightclinicalstudy.presentation.utils.PermissionUtil
 import com.example.dawnlightclinicalstudy.usecases.service.DataReceiverService
 import com.example.dawnlightclinicalstudy.usecases.service.ServiceListener
@@ -33,9 +34,11 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainActivityViewModel by viewModels()
 
+    @ExperimentalComposeUiApi
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         setContent {
             Navigation()
             render(viewModel.state)

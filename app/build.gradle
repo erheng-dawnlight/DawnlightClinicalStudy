@@ -83,6 +83,7 @@ dependencies {
     def retrofit = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit"
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 
     def hilt = "2.33-beta"
     implementation "com.google.dagger:hilt-android:$hilt"
@@ -106,4 +107,9 @@ dependencies {
     implementation files('libs/lifesignals_api_V3.0.23.aar')
 
     implementation 'org.apache.commons:commons-lang3:3.6'
+
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+    implementation 'com.facebook.stetho:stetho-js-rhino:1.5.1'
+
 }

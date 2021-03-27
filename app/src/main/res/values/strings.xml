@@ -12,6 +12,9 @@
     <string name="patch">patch</string>
     <string name="go_to_hotspot_setting">Go to hotspot setting</string>
     <string name="next">Next</string>
+    <string name="location">Location</string>
+    <string name="room">Room</string>
+    <string name="devices">Devices</string>
     <string name="start">Start</string>
     <string name="abort">Abort</string>
     <string name="lying_left">Lying on the left side.</string>

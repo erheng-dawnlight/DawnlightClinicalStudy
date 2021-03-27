@@ -1,11 +1,9 @@
 package com.example.dawnlightclinicalstudy.data_source
 
-import retrofit2.http.POST
-import retrofit2.http.Path
+import com.example.dawnlightclinicalstudy.data_source.response.TestPlanResponse
+import retrofit2.http.GET
 
 interface RetrofitService {
-    @POST("1/signal/{device_id}")
-    fun uploadLifeSignal(
-        @Path("device_id") deviceId: String,
-    )
+    @GET("api/1/testPlan")
+    suspend fun testPlan(): TestPlanResponse
 }
