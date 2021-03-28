@@ -14,6 +14,7 @@ import com.example.dawnlightclinicalstudy.domain.Posture
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
+import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
 import com.example.dawnlightclinicalstudy.presentation.utils.TimeUtil.millisToMinutesColinSeconds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -35,7 +36,7 @@ class GraphMonitorViewModel @Inject constructor(
     data class State(
         val toolbarTitle: StringWrapper? = null,
         val patchData: SingleEvent<LifeSignalFilteredData>? = null,
-        val isStarted: Boolean = false,
+        val timerState: TimerState = TimerState.NOT_STARTED,
         val buttonText: StringWrapper = StringWrapper.Res(R.string.start),
         val timerText: StringWrapper =
             StringWrapper.Text(millisToMinutesColinSeconds(DEFAULT_SESSION_TIME_MILLIS)),
@@ -43,7 +44,15 @@ class GraphMonitorViewModel @Inject constructor(
         val warningText: StringWrapper? = null,
 
         val goBack: SingleEvent<Unit>? = null,
+        val navigateTo: SingleEvent<String>? = null,
     )
+
+    enum class TimerState {
+        NOT_STARTED,
+        STARTED,
+        FINISHED,
+        ;
+    }
 
     val state = mutableStateOf(State())
     var lastPatchId = ""
@@ -93,10 +102,18 @@ class GraphMonitorViewModel @Inject constructor(
     }
 
     fun bottomButtonClicked() {
-        if (state.value.isStarted) {
-            abortMonitor()
-        } else {
-            startMonitor()
+        when (state.value.timerState) {
+            TimerState.NOT_STARTED -> {
+                startMonitor()
+            }
+            TimerState.STARTED -> {
+                abortMonitor()
+            }
+            TimerState.FINISHED -> {
+                state.value = state.value.copy(
+                    navigateTo = SingleEvent(Screen.UsbTransfer.route)
+                )
+            }
         }
     }
 
@@ -104,7 +121,7 @@ class GraphMonitorViewModel @Inject constructor(
         startTimer()
         state.value = state.value.copy(
             buttonText = StringWrapper.Res(R.string.abort),
-            isStarted = true,
+            timerState = TimerState.STARTED,
         )
         openSession()
     }
@@ -127,7 +144,7 @@ class GraphMonitorViewModel @Inject constructor(
         countDownTimer = null
         state.value = state.value.copy(
             buttonText = StringWrapper.Res(R.string.start),
-            isStarted = false,
+            timerState = TimerState.NOT_STARTED,
             timerText = StringWrapper.Text(
                 millisToMinutesColinSeconds(DEFAULT_SESSION_TIME_MILLIS)
             ),
@@ -151,6 +168,10 @@ class GraphMonitorViewModel @Inject constructor(
             override fun onFinish() {
                 uploadSignal()
                 countDownTimer = null
+                state.value = state.value.copy(
+                    buttonText = StringWrapper.Res(R.string.next),
+                    timerState = TimerState.FINISHED,
+                )
             }
         }.start()
     }

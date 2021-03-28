@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
 import com.example.dawnlightclinicalstudy.presentation.theme.AppTheme
 import com.example.dawnlightclinicalstudy.presentation.ui.component.AppTopBar
 import com.example.dawnlightclinicalstudy.presentation.ui.component.BottomButton
@@ -105,5 +106,9 @@ fun GraphMonitorScreen(
 
     viewModel.state.value.goBack?.maybeConsume {
         navController.popBackStack()
+    }
+
+    viewModel.state.value.navigateTo?.maybeConsume {
+        navController.navigate(it)
     }
 }

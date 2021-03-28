@@ -18,6 +18,11 @@ interface RetrofitService {
         @Body values: OpenSessionRequest,
     ): EmptyResponse
 
+    @POST("api/1/session/close")
+    suspend fun closeSession(
+        @Body values: OpenSessionRequest,
+    ): EmptyResponse
+
     @POST("api/1/signal/{deviceId}")
     suspend fun uploadSignal(
         @Path("deviceId") deviceId: String,

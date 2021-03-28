@@ -15,6 +15,8 @@ class UserSessionRepository(
     var subjectId = ""
     val deviceIds = mutableListOf<String>()
 
+    private var currentSessionRequest: OpenSessionRequest? = null
+
     suspend fun fetchTestPlan(): DataState<TestPlanResponse> {
         return safeApiCall(Dispatchers.IO) {
             retrofitService.testPlan()
@@ -24,8 +26,15 @@ class UserSessionRepository(
     suspend fun openSession(
         openSessionRequest: OpenSessionRequest,
     ): DataState<EmptyResponse> {
+        currentSessionRequest = openSessionRequest
         return safeApiCall(Dispatchers.IO) {
             retrofitService.openSession(openSessionRequest)
+        }
+    }
+
+    suspend fun closeSession(): DataState<EmptyResponse> {
+        return safeApiCall(Dispatchers.IO) {
+            retrofitService.openSession(currentSessionRequest!!)
         }
     }
 }

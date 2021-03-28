@@ -16,6 +16,8 @@ import com.example.dawnlightclinicalstudy.presentation.ui.monitor.GraphMonitorSc
 import com.example.dawnlightclinicalstudy.presentation.ui.monitor.GraphMonitorViewModel
 import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectIdInputScreen
 import com.example.dawnlightclinicalstudy.presentation.ui.subject_input.SubjectIdInputViewModel
+import com.example.dawnlightclinicalstudy.presentation.ui.usb_transfer.UsbTransferScreen
+import com.example.dawnlightclinicalstudy.presentation.ui.usb_transfer.UsbTransferViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
@@ -53,6 +55,16 @@ fun Navigation() {
             val viewModel: GraphMonitorViewModel =
                 viewModel(Screen.GraphMonitor.route, factory)
             GraphMonitorScreen(
+                viewModel = viewModel,
+                navController = navController,
+            )
+        }
+
+        composable(route = Screen.UsbTransfer.route) { backStackEntry ->
+            val factory = HiltViewModelFactory(LocalContext.current, backStackEntry)
+            val viewModel: UsbTransferViewModel =
+                viewModel(Screen.UsbTransfer.route, factory)
+            UsbTransferScreen(
                 viewModel = viewModel,
                 navController = navController,
             )
