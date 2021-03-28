@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.data.DataState
-import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.data.UserSessionRepository
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
@@ -17,7 +16,6 @@ import javax.inject.Inject
 @FlowPreview
 @HiltViewModel
 class SubjectIdInputViewModel @Inject constructor(
-    val repository: LifeSignalRepository,
     val userSessionRepository: UserSessionRepository,
     val mainActivityEventListener: MainActivityEventListener,
 ) : ViewModel() {
@@ -49,7 +47,7 @@ class SubjectIdInputViewModel @Inject constructor(
     }
 
     private fun nextStep() {
-        repository.subjectId = state.value.subjectId
+        userSessionRepository.subjectId = state.value.subjectId
         state.value = state.value.copy(
             navigateTo = SingleEvent(Screen.HotspotConnection.route)
         )
@@ -61,6 +59,10 @@ class SubjectIdInputViewModel @Inject constructor(
                 is DataState.Success -> {
                     val data = response.value.data.getOrNull(0) ?: return@launch
                     val deviceInfo = data.deviceInfo.map { it.key to it.value }
+
+                    userSessionRepository.deviceIds.clear()
+                    deviceInfo.forEach { userSessionRepository.deviceIds.add(it.first) }
+
                     val location = data.location
                     val room = data.room
                     state.value = state.value.copy(

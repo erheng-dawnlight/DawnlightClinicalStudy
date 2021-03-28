@@ -17,8 +17,8 @@ object MainActivityModule {
 
     @ActivityRetainedScoped
     @Provides
-    fun provideLifeSignalRepository(): LifeSignalRepository {
-        return LifeSignalRepository()
+    fun provideLifeSignalRepository(retrofitService: RetrofitService): LifeSignalRepository {
+        return LifeSignalRepository(retrofitService)
     }
 
     @ActivityRetainedScoped

@@ -112,4 +112,5 @@ dependencies {
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
     implementation 'com.facebook.stetho:stetho-js-rhino:1.5.1'
 
+    debugImplementation "com.didichuxing.doraemonkit:dokitx:3.3.5"
 }

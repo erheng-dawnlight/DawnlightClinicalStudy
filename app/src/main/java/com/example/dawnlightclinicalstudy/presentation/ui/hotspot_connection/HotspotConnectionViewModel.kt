@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
+import com.example.dawnlightclinicalstudy.data.UserSessionRepository
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HotspotConnectionViewModel @Inject constructor(
     val repository: LifeSignalRepository,
+    val userSessionRepository: UserSessionRepository,
     val mainActivityEventListener: MainActivityEventListener,
 ) : ViewModel() {
 
@@ -35,7 +37,8 @@ class HotspotConnectionViewModel @Inject constructor(
     var lastPatchId = ""
 
     init {
-        state.value = state.value.copy(toolbarTitle = StringWrapper.Text(repository.subjectId))
+        state.value =
+            state.value.copy(toolbarTitle = StringWrapper.Text(userSessionRepository.subjectId))
 
         repository.lastDiscoveredPatchFlow
             .distinctUntilChanged()

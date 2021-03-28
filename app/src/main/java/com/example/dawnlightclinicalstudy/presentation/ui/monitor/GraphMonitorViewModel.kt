@@ -6,7 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.R
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
+import com.example.dawnlightclinicalstudy.data.UserSessionRepository
+import com.example.dawnlightclinicalstudy.data_source.request.LifeSignalRequest
+import com.example.dawnlightclinicalstudy.data_source.request.OpenSessionRequest
 import com.example.dawnlightclinicalstudy.domain.LifeSignalFilteredData
+import com.example.dawnlightclinicalstudy.domain.Posture
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
@@ -15,6 +19,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -22,6 +28,7 @@ import kotlin.random.Random
 @HiltViewModel
 class GraphMonitorViewModel @Inject constructor(
     private val repository: LifeSignalRepository,
+    private val userSessionRepository: UserSessionRepository,
     private val mainActivityEventListener: MainActivityEventListener,
 ) : ViewModel() {
 
@@ -45,7 +52,7 @@ class GraphMonitorViewModel @Inject constructor(
 
     init {
         state.value = state.value.copy(
-            toolbarTitle = StringWrapper.Text(repository.subjectId),
+            toolbarTitle = StringWrapper.Text(userSessionRepository.subjectId),
             postureText = generatePostureText(),
         )
 
@@ -74,11 +81,15 @@ class GraphMonitorViewModel @Inject constructor(
 
     private fun generatePostureText(): StringWrapper {
         return arrayOf(
-            R.string.lying_left,
-            R.string.lying_right,
-            R.string.lying_up,
-            R.string.sitting_in_the_chair,
-        ).let { StringWrapper.Res(it[Random.nextInt(it.size)]) }
+            Posture.LEFT to R.string.lying_left,
+            Posture.RIGHT to R.string.lying_right,
+            Posture.UP to R.string.lying_up,
+            Posture.SIT to R.string.sitting_in_the_chair,
+        ).let {
+            val posture = it[Random.nextInt(it.size)]
+            userSessionRepository.posture = posture.first
+            StringWrapper.Res(posture.second)
+        }
     }
 
     fun bottomButtonClicked() {
@@ -95,6 +106,20 @@ class GraphMonitorViewModel @Inject constructor(
             buttonText = StringWrapper.Res(R.string.abort),
             isStarted = true,
         )
+        openSession()
+    }
+
+    private fun openSession() {
+        viewModelScope.launch {
+            userSessionRepository.openSession(
+                OpenSessionRequest(
+                    userSessionRepository.deviceIds,
+                    userSessionRepository.posture.type,
+                    System.currentTimeMillis(),
+                    userSessionRepository.subjectId,
+                )
+            )
+        }
     }
 
     private fun abortMonitor() {
@@ -118,9 +143,13 @@ class GraphMonitorViewModel @Inject constructor(
                         millisToMinutesColinSeconds(millisUntilFinished)
                     )
                 )
+                if (TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished).toInt() % 5 == 0) {
+                    uploadSignal()
+                }
             }
 
             override fun onFinish() {
+                uploadSignal()
                 countDownTimer = null
             }
         }.start()
@@ -128,6 +157,25 @@ class GraphMonitorViewModel @Inject constructor(
 
     fun warningTextClicked() {
         state.value = state.value.copy(goBack = SingleEvent(Unit))
+    }
+
+    private fun uploadSignal() {
+        viewModelScope.launch {
+            val request = repository.filteredDataList.map {
+                LifeSignalRequest(
+                    "ecg",
+                    it.currentTime,
+                    "rawData",
+                    LifeSignalRequest.LifeSignalRequestData(
+                        it.ecg0,
+                        it.ecg1,
+                        it.hr,
+                    ),
+                )
+            }
+            repository.filteredDataList.clear()
+            repository.uploadSignal(repository.patchId, request)
+        }
     }
 
     companion object {

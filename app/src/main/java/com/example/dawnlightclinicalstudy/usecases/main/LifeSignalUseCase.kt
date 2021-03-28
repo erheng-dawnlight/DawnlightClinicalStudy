@@ -43,8 +43,15 @@ class LifeSignalUseCase(
                         ecg1.add(array.getInt(i))
                     }
                 }
+                val hr = ArrayList<Int>()
+                if (sensorData.has("HR")) {
+                    val array = sensorData.getJSONArray("HR")
+                    for (i in 0 until array.length()) {
+                        hr.add(array.getInt(i))
+                    }
+                }
                 lifeSignalRepository.onFilteredData(
-                    LifeSignalFilteredData(ecg0, ecg1, System.currentTimeMillis())
+                    LifeSignalFilteredData(ecg0, ecg1, hr, System.currentTimeMillis())
                 )
             }
         }
