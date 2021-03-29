@@ -8,13 +8,15 @@
     <string name="plug_in_usb_instruction">Plug in the USB drive and turn on capnostream.</string>
     <string name="looking_for_the_device">Looking for the device ...</string>
     <string name="xxx_has_connected">%1$s has connected.</string>
-    <string name="subject_id">Input Subject ID:</string>
+    <string name="subject_id">Subject ID</string>
     <string name="patch">patch</string>
     <string name="go_to_hotspot_setting">Go to hotspot setting</string>
     <string name="next">Next</string>
     <string name="location">Location</string>
     <string name="room">Room</string>
     <string name="devices">Devices</string>
+    <string name="postures">Postures</string>
+    <string name="each_session_seconds">Each Session Seconds</string>
     <string name="start">Start</string>
     <string name="abort">Abort</string>
     <string name="lying_left">Lying on the left side.</string>

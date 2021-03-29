@@ -1,11 +1,10 @@
 package com.example.dawnlightclinicalstudy.presentation.ui.subject_input
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -23,6 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
 import com.example.dawnlightclinicalstudy.R
+import com.example.dawnlightclinicalstudy.domain.Posture
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.domain.StringWrapper
 import com.example.dawnlightclinicalstudy.presentation.theme.AppTheme
@@ -50,40 +50,38 @@ fun SubjectIdInputScreen(
                 ) {}
             }
         ) {
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(24.dp)
+                    .verticalScroll(scrollState)
             ) {
+                Text(
+                    text = LocalContext.current.getString(R.string.subject_id),
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
+                )
+
                 TextField(
                     value = viewModel.state.value.subjectId,
                     onValueChange = { viewModel.subjectIdTextChanged(it) },
-                    label = {
-                        Text(
-                            text = LocalContext.current.getString(R.string.subject_id),
-                        )
-                    },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
+                        imeAction = ImeAction.Done,
                         capitalization = KeyboardCapitalization.Characters,
                     ),
                     keyboardActions = KeyboardActions(
-                        onNext = {
-                            keyboardController?.hideSoftwareKeyboard()
-                            viewModel.keyboardOnNext()
-                        }
+                        onDone = { keyboardController?.hideSoftwareKeyboard() }
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp, 72.dp, 16.dp, 0.dp)
+                        .padding(16.dp, 8.dp, 16.dp, 0.dp)
                         .align(Alignment.CenterHorizontally)
                 )
 
                 Text(
-                    text = LocalContext.current.getString(
-                        R.string.location,
-                    ),
+                    text = LocalContext.current.getString(R.string.location),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.padding(16.dp, 32.dp, 16.dp, 0.dp),
                 )
@@ -95,9 +93,7 @@ fun SubjectIdInputScreen(
                 )
 
                 Text(
-                    text = LocalContext.current.getString(
-                        R.string.room,
-                    ),
+                    text = LocalContext.current.getString(R.string.room),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
                 )
@@ -126,6 +122,57 @@ fun SubjectIdInputScreen(
                         modifier = Modifier.padding(16.dp, 0.dp),
                     )
                 }
+
+                Text(
+                    text = LocalContext.current.getString(R.string.postures),
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
+                )
+
+                viewModel.state.value.postures?.let { postures ->
+                    viewModel.state.value.posturesCheckboxSelections?.let { checkboxes ->
+                        postures.forEachIndexed { index, res ->
+                            Row(
+                                modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 8.dp),
+                            ) {
+                                Checkbox(
+                                    checked = checkboxes[index],
+                                    onCheckedChange = {
+                                        viewModel.postureChecked(index, it)
+                                    },
+                                    colors = CheckboxDefaults.colors(MaterialTheme.colors.primary),
+                                )
+                                Text(
+                                    text = LocalContext.current.getString(Posture.getString(res)),
+                                    style = MaterialTheme.typography.body1,
+                                    modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Text(
+                    text = LocalContext.current.getString(R.string.each_session_seconds),
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
+                )
+
+                TextField(
+                    value = viewModel.state.value.sessionTimeSec,
+                    onValueChange = { viewModel.sessionTimeTextChanged(it) },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hideSoftwareKeyboard() }
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 8.dp, 16.dp, 32.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
 
                 BottomButton(
                     onButtonClicked = viewModel::nextButtonClicked,
