@@ -19,9 +19,9 @@
     <string name="each_session_seconds">Each Session Seconds</string>
     <string name="start">Start</string>
     <string name="abort">Abort</string>
-    <string name="lying_left">Lying on the left side.</string>
-    <string name="lying_right">Lying on the right side.</string>
-    <string name="lying_up">Lying facing up.</string>
-    <string name="sitting_in_the_chair">Sitting in the chair.</string>
+    <string name="lying_left">Lying on the left side</string>
+    <string name="lying_right">Lying on the right side</string>
+    <string name="lying_up">Lying facing up</string>
+    <string name="sitting_in_the_chair">Sitting in the chair</string>
     <string name="patch_not_available">This patch is out of service, please use a different one.</string>
 </resources>

@@ -8,14 +8,13 @@ import com.example.dawnlightclinicalstudy.R
 import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.data.UserSessionRepository
 import com.example.dawnlightclinicalstudy.data_source.request.LifeSignalRequest
-import com.example.dawnlightclinicalstudy.data_source.request.OpenSessionRequest
-import com.example.dawnlightclinicalstudy.domain.LifeSignalFilteredData
-import com.example.dawnlightclinicalstudy.domain.Posture
-import com.example.dawnlightclinicalstudy.domain.SingleEvent
-import com.example.dawnlightclinicalstudy.domain.StringWrapper
+import com.example.dawnlightclinicalstudy.data_source.request.OpenCloseSessionRequest
+import com.example.dawnlightclinicalstudy.domain.*
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
 import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
 import com.example.dawnlightclinicalstudy.presentation.utils.TimeUtil.millisToMinutesColinSeconds
+import com.example.dawnlightclinicalstudy.presentation.utils.TimeUtil.secondsToMinutesColinSeconds
+import com.example.dawnlightclinicalstudy.usecases.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.random.Random
 
 @FlowPreview
 @HiltViewModel
@@ -31,6 +29,7 @@ class GraphMonitorViewModel @Inject constructor(
     private val repository: LifeSignalRepository,
     private val userSessionRepository: UserSessionRepository,
     private val mainActivityEventListener: MainActivityEventListener,
+    private val sessionManager: SessionManager,
 ) : ViewModel() {
 
     data class State(
@@ -38,8 +37,7 @@ class GraphMonitorViewModel @Inject constructor(
         val patchData: SingleEvent<LifeSignalFilteredData>? = null,
         val timerState: TimerState = TimerState.NOT_STARTED,
         val buttonText: StringWrapper = StringWrapper.Res(R.string.start),
-        val timerText: StringWrapper =
-            StringWrapper.Text(millisToMinutesColinSeconds(DEFAULT_SESSION_TIME_MILLIS)),
+        val timerText: StringWrapper? = null,
         val postureText: StringWrapper? = null,
         val warningText: StringWrapper? = null,
 
@@ -55,14 +53,14 @@ class GraphMonitorViewModel @Inject constructor(
     }
 
     val state = mutableStateOf(State())
-    var lastPatchId = ""
 
     private var countDownTimer: CountDownTimer? = null
 
     init {
         state.value = state.value.copy(
-            toolbarTitle = StringWrapper.Text(userSessionRepository.subjectId),
-            postureText = generatePostureText(),
+            toolbarTitle = getToolBarTitle(),
+            postureText = getPostureText(),
+            timerText = getTimerText(),
         )
 
         repository.filteredDataFlow
@@ -88,17 +86,16 @@ class GraphMonitorViewModel @Inject constructor(
         mainActivityEventListener.startHotspotService()
     }
 
-    private fun generatePostureText(): StringWrapper {
-        return arrayOf(
-            Posture.LEFT to R.string.lying_left,
-            Posture.RIGHT to R.string.lying_right,
-            Posture.UP to R.string.lying_up,
-            Posture.SIT to R.string.sitting_in_the_chair,
-        ).let {
-            val posture = it[Random.nextInt(it.size)]
-            userSessionRepository.posture = posture.first
-            StringWrapper.Res(posture.second)
-        }
+    private fun getToolBarTitle(): StringWrapper {
+        return StringWrapper.Text("${userSessionRepository.subjectId} (${sessionManager.currentSessionIndex + 1}/${sessionManager.totalSessions}) ")
+    }
+
+    private fun getPostureText(): StringWrapper {
+        return StringWrapper.Res(Posture.getStringRes((sessionManager.currentSession() as Session.PostureSession).posture))
+    }
+
+    private fun getTimerText(): StringWrapper {
+        return StringWrapper.Text(secondsToMinutesColinSeconds(userSessionRepository.eachSessionSecond.toLong()))
     }
 
     fun bottomButtonClicked() {
@@ -110,9 +107,18 @@ class GraphMonitorViewModel @Inject constructor(
                 abortMonitor()
             }
             TimerState.FINISHED -> {
-                state.value = state.value.copy(
-                    navigateTo = SingleEvent(Screen.UsbTransfer.route)
-                )
+                if (sessionManager.hasNextSession()) {
+                    val nextSession = sessionManager.nextSession()
+                    if (nextSession is Session.PostureSession) {
+                        state.value = state.value.copy(
+                            navigateTo = SingleEvent(Screen.GraphMonitor.route)
+                        )
+                    }
+                } else {
+                    state.value = state.value.copy(
+                        navigateTo = SingleEvent(Screen.UsbTransfer.route)
+                    )
+                }
             }
         }
     }
@@ -129,9 +135,22 @@ class GraphMonitorViewModel @Inject constructor(
     private fun openSession() {
         viewModelScope.launch {
             userSessionRepository.openSession(
-                OpenSessionRequest(
+                OpenCloseSessionRequest(
                     userSessionRepository.deviceIds,
-                    userSessionRepository.posture.type,
+                    (sessionManager.currentSession() as Session.PostureSession).posture.type,
+                    System.currentTimeMillis(),
+                    userSessionRepository.subjectId,
+                )
+            )
+        }
+    }
+
+    private fun closeSession() {
+        viewModelScope.launch {
+            userSessionRepository.closeSession(
+                OpenCloseSessionRequest(
+                    userSessionRepository.deviceIds,
+                    (sessionManager.currentSession() as Session.PostureSession).posture.type,
                     System.currentTimeMillis(),
                     userSessionRepository.subjectId,
                 )
@@ -146,27 +165,32 @@ class GraphMonitorViewModel @Inject constructor(
             buttonText = StringWrapper.Res(R.string.start),
             timerState = TimerState.NOT_STARTED,
             timerText = StringWrapper.Text(
-                millisToMinutesColinSeconds(DEFAULT_SESSION_TIME_MILLIS)
+                secondsToMinutesColinSeconds(userSessionRepository.eachSessionSecond.toLong())
             ),
         )
     }
 
     private fun startTimer() {
         countDownTimer?.cancel()
-        countDownTimer = object : CountDownTimer(DEFAULT_SESSION_TIME_MILLIS, 1000) {
+        countDownTimer = object : CountDownTimer(
+            TimeUnit.SECONDS.toMillis(userSessionRepository.eachSessionSecond.toLong()),
+            1000,
+        ) {
             override fun onTick(millisUntilFinished: Long) {
                 state.value = state.value.copy(
                     timerText = StringWrapper.Text(
                         millisToMinutesColinSeconds(millisUntilFinished)
                     )
                 )
-                if (TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished).toInt() % 5 == 0) {
+                val secondUntilFinish = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished).toInt()
+                if (secondUntilFinish % 5 == 0 && secondUntilFinish != 0) {
                     uploadSignal()
                 }
             }
 
             override fun onFinish() {
                 uploadSignal()
+                closeSession()
                 countDownTimer = null
                 state.value = state.value.copy(
                     buttonText = StringWrapper.Res(R.string.next),
@@ -197,9 +221,5 @@ class GraphMonitorViewModel @Inject constructor(
             repository.filteredDataList.clear()
             repository.uploadSignal(repository.patchId, request)
         }
-    }
-
-    companion object {
-        const val DEFAULT_SESSION_TIME_MILLIS = 60000L
     }
 }

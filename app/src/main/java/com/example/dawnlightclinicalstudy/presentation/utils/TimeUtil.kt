@@ -9,4 +9,10 @@ object TimeUtil {
         val sec = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(min)
         return String.format("%02d:%02d", min, sec)
     }
+
+    fun secondsToMinutesColinSeconds(seconds: Long): String {
+        val min = TimeUnit.SECONDS.toMinutes(seconds)
+        val sec = seconds - TimeUnit.MINUTES.toSeconds(min)
+        return String.format("%02d:%02d", min, sec)
+    }
 }

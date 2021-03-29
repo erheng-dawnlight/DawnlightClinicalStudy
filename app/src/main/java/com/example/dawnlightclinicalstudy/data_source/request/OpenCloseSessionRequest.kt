@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class OpenSessionRequest(
+data class OpenCloseSessionRequest(
     @Json(name = "deviceIds") val deviceIds: List<String>,
     @Json(name = "position") val position: String,
     @Json(name = "ts") val ts: Long,

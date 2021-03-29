@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.dawnlightclinicalstudy.data.DataState
 import com.example.dawnlightclinicalstudy.data.UserSessionRepository
 import com.example.dawnlightclinicalstudy.domain.Posture
+import com.example.dawnlightclinicalstudy.domain.Session
 import com.example.dawnlightclinicalstudy.domain.SingleEvent
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
 import com.example.dawnlightclinicalstudy.presentation.navigation.Screen
+import com.example.dawnlightclinicalstudy.usecases.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
@@ -20,6 +22,7 @@ import kotlin.random.Random.Default.nextBoolean
 class SubjectIdInputViewModel @Inject constructor(
     val userSessionRepository: UserSessionRepository,
     val mainActivityEventListener: MainActivityEventListener,
+    val sessionManager: SessionManager,
 ) : ViewModel() {
 
     data class State(
@@ -29,7 +32,7 @@ class SubjectIdInputViewModel @Inject constructor(
         val location: String = "",
         val postures: List<Posture>? = null,
         val posturesCheckboxSelections: List<Boolean>? = null,
-        val sessionTimeSec: String = "60",
+        val sessionTimeSec: String = "6",
         val navigateTo: SingleEvent<String>? = null,
     )
 
@@ -56,12 +59,20 @@ class SubjectIdInputViewModel @Inject constructor(
         nextStep()
     }
 
-    fun keyboardOnNext() {
-        nextStep()
-    }
-
     private fun nextStep() {
         userSessionRepository.subjectId = state.value.subjectId
+        userSessionRepository.eachSessionSecond = Integer.valueOf(state.value.sessionTimeSec)
+        userSessionRepository.sessions.clear()
+        state.value.postures?.let { postures ->
+            state.value.posturesCheckboxSelections?.let { selections ->
+                postures.forEachIndexed { index, posture ->
+                    if (selections[index]) {
+                        userSessionRepository.sessions.add(Session.PostureSession(posture))
+                    }
+                }
+            }
+        }
+
         state.value = state.value.copy(
             navigateTo = SingleEvent(Screen.HotspotConnection.route)
         )

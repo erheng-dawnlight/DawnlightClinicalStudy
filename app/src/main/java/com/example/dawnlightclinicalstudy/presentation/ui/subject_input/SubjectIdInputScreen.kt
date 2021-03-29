@@ -143,7 +143,7 @@ fun SubjectIdInputScreen(
                                     colors = CheckboxDefaults.colors(MaterialTheme.colors.primary),
                                 )
                                 Text(
-                                    text = LocalContext.current.getString(Posture.getString(res)),
+                                    text = LocalContext.current.getString(Posture.getStringRes(res)),
                                     style = MaterialTheme.typography.body1,
                                     modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp)
                                 )

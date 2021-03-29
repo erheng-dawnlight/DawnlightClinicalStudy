@@ -69,7 +69,7 @@ fun GraphMonitorScreen(
                 )
 
                 Text(
-                    text = viewModel.state.value.timerText.getText(LocalContext.current),
+                    text = viewModel.state.value.timerText?.getText(LocalContext.current) ?: "",
                     style = MaterialTheme.typography.h4,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),

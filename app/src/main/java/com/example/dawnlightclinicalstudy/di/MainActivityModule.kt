@@ -4,6 +4,7 @@ import com.example.dawnlightclinicalstudy.data.LifeSignalRepository
 import com.example.dawnlightclinicalstudy.data.UserSessionRepository
 import com.example.dawnlightclinicalstudy.data_source.RetrofitService
 import com.example.dawnlightclinicalstudy.presentation.MainActivityEventListener
+import com.example.dawnlightclinicalstudy.usecases.SessionManager
 import com.example.dawnlightclinicalstudy.usecases.main.LifeSignalUseCase
 import dagger.Module
 import dagger.Provides
@@ -31,6 +32,14 @@ object MainActivityModule {
     @Provides
     fun provideMainActivityEventListener(): MainActivityEventListener {
         return MainActivityEventListener()
+    }
+
+    @ActivityRetainedScoped
+    @Provides
+    fun provideSessionManager(
+        userSessionRepository: UserSessionRepository,
+    ): SessionManager {
+        return SessionManager(userSessionRepository)
     }
 
     @Provides

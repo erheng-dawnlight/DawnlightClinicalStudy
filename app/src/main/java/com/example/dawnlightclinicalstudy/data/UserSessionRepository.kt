@@ -1,21 +1,20 @@
 package com.example.dawnlightclinicalstudy.data
 
 import com.example.dawnlightclinicalstudy.data_source.RetrofitService
-import com.example.dawnlightclinicalstudy.data_source.request.OpenSessionRequest
+import com.example.dawnlightclinicalstudy.data_source.request.OpenCloseSessionRequest
 import com.example.dawnlightclinicalstudy.data_source.response.EmptyResponse
 import com.example.dawnlightclinicalstudy.data_source.response.TestPlanResponse
-import com.example.dawnlightclinicalstudy.domain.Posture
+import com.example.dawnlightclinicalstudy.domain.Session
 import kotlinx.coroutines.Dispatchers
 
 class UserSessionRepository(
     private val retrofitService: RetrofitService,
 ) {
 
-    var posture: Posture = Posture.UNKNOWN
     var subjectId = ""
     val deviceIds = mutableListOf<String>()
-
-    private var currentSessionRequest: OpenSessionRequest? = null
+    var eachSessionSecond = 60
+    val sessions = mutableListOf<Session>()
 
     suspend fun fetchTestPlan(): DataState<TestPlanResponse> {
         return safeApiCall(Dispatchers.IO) {
@@ -24,17 +23,18 @@ class UserSessionRepository(
     }
 
     suspend fun openSession(
-        openSessionRequest: OpenSessionRequest,
+        openCloseSessionRequest: OpenCloseSessionRequest,
     ): DataState<EmptyResponse> {
-        currentSessionRequest = openSessionRequest
         return safeApiCall(Dispatchers.IO) {
-            retrofitService.openSession(openSessionRequest)
+            retrofitService.openSession(openCloseSessionRequest)
         }
     }
 
-    suspend fun closeSession(): DataState<EmptyResponse> {
+    suspend fun closeSession(
+        openCloseSessionRequest: OpenCloseSessionRequest,
+    ): DataState<EmptyResponse> {
         return safeApiCall(Dispatchers.IO) {
-            retrofitService.openSession(currentSessionRequest!!)
+            retrofitService.closeSession(openCloseSessionRequest)
         }
     }
 }

@@ -11,7 +11,7 @@ enum class Posture(val type: String) {
     ;
 
     companion object {
-        fun getString(posture: Posture): Int {
+        fun getStringRes(posture: Posture): Int {
             return when (posture) {
                 UP -> R.string.lying_up
                 LEFT -> R.string.lying_left
